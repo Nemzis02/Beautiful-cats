@@ -1,0 +1,54 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 3px 17px -4px rgba(166,166,166,1);
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  border: 2px solid rgb(161, 161, 161);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
+
+.userName {
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.date {
+  margin-left: 10px;
+}
+
+.title {
+  margin-top: 14px;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.article {
+  margin-top: 14px;
+}
+
+.articleImage {
+  margin-top: 14px;
+  width: 100%;
+}
+
+.postFooter {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: 10px;
+
+  button {
+    margin-left: 6px;
+  }
+}

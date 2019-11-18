@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -6,25 +6,29 @@ import {
   Switch
 } from "react-router-dom";
 
-import { Page404 } from 'pages';
+import { Page404, Feed } from "pages";
+import { Header } from "components/containers";
 import { ROUTES } from "global/routes";
 
-function App() {
+const App = () => {
   return (
-    <Router>
-      <Switch>
-        <Route path={ROUTES.FEED}>
-          <div>Hello</div>
-        </Route>
-        <Route exact path="/">
-          <Redirect to={ROUTES.FEED} />
-        </Route>
-        <Route path="*">
-          <Page404 />
-        </Route>
-      </Switch>
-    </Router>
+    <Fragment>
+      <Router>
+        <Header />
+        <Switch>
+          <Route path={ROUTES.FEED}>
+            <Feed />
+          </Route>
+          <Route exact path="/">
+            <Redirect to={ROUTES.FEED} />
+          </Route>
+          <Route path="*">
+            <Page404 />
+          </Route>
+        </Switch>
+      </Router>
+    </Fragment>
   );
-}
+};
 
 export default App;

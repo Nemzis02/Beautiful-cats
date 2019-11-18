@@ -1,0 +1,18 @@
+.container {
+    display: flex;
+    align-items: center;
+    padding: 0px 20px 0px 20px;
+    height: 50px;
+    width: 100%;
+    background-color: #9a7eff;
+
+    a {
+        color: white;
+        text-decoration: none;
+        margin-right: 20px;
+    }
+
+    a:hover {
+        color: #ffdd93;
+    }
+}
