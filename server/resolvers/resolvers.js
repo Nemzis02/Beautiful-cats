@@ -1,14 +1,22 @@
 const Post = require('../models/post');
+const Comment = require('../models/Comment');
 
 module.exports = resolvers = {
   Query: {
     posts: async () => {
-      const posts = await Post.find().sort({ createdAt: 'desc' });
+      let posts = await Post.find()
+        .sort({ createdAt: 'desc' })
+        .populate('comments');
       return posts;
     },
     post: async (_, args) => {
-      const post = await Post.findById(args.id);
-      console.log(post);
+      const post = await Post.findById(args.id).populate({ 
+        path: 'comments',
+        populate: {
+          path: 'replies',
+          model: 'Comment'
+        } 
+     });
       return post;
     }
   },
@@ -19,6 +27,30 @@ module.exports = resolvers = {
         await post.save();
         console.log(post);
         return post;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    addComment: async (_, req) => {
+      const { repliedTo, parentComment } = req.comment;
+      try {
+        if (repliedTo && parentComment) {
+          const existingComment = await Comment.findById(parentComment);
+          const newComment = new Comment({ ...req.comment });
+          await newComment.save();
+          existingComment.replies.push(newComment);
+          await existingComment.save();
+          console.log(existingComment);
+          return existingComment;
+        } else {
+          const comment = new Comment({ ...req.comment });
+          await comment.save();
+          const post = await Post.findById(req.comment.post);
+          post.comments.push(comment._id);
+          await post.save();
+          console.log(comment);
+          return comment;
+        }
       } catch (error) {
         console.log(error);
       }
