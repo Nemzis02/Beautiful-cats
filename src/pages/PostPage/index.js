@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
 import { pathOr } from 'ramda';
 
-import { Post } from 'components/presentational';
+import { Post, Comment } from 'components/presentational';
 import { POST } from 'apollo/queries';
 import { getDateString } from 'utils/utils';
 import avatar from 'assets/images/avatar.jpg';
@@ -24,7 +24,7 @@ const PostPage = ({ match }) => {
   const { data, loading } = useQuery(POST, {
     variables: { id: postId }
   });
-
+  console.log(data);
   const post = { ...pathOr({}, ['post'], data) };
 
   if (!post.user) {
@@ -39,6 +39,7 @@ const PostPage = ({ match }) => {
   return (
     <main className={styles.container}>
       <Post {...post} isAllArticleDisplay />
+      <Comment />
     </main>
   );
 };

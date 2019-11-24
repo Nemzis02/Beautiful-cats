@@ -52,7 +52,9 @@ const Post = props => {
         )}
         <button type='button'>Ссылка</button>
         <button type='button'>-</button>
+        0
         <button type='button'>+</button>
+        0
       </nav>
     </section>
   );

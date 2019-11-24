@@ -22,6 +22,15 @@ export const POST = gql`
       article
       images
       createdAt
+      comments {
+        _id
+        text
+        author
+        repliedTo
+        replies {
+          text
+        }
+      }
     }
   }
 `;
