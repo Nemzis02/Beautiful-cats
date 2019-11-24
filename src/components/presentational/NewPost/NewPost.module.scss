@@ -1,0 +1,13 @@
+.container {
+    background-color: rgb(177, 177, 177);
+    padding: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.image {
+    max-height: 300px;
+}

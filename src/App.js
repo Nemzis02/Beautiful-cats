@@ -1,14 +1,14 @@
-import React, { Fragment } from "react";
+import React, { Fragment } from 'react';
 import {
   BrowserRouter as Router,
   Route,
   Redirect,
   Switch
-} from "react-router-dom";
+} from 'react-router-dom';
 
-import { Page404, Feed } from "pages";
-import { Header } from "components/containers";
-import { ROUTES } from "global/routes";
+import { Page404, Feed, PostPage } from 'pages';
+import { Header } from 'components/containers';
+import { ROUTES } from 'global/routes';
 
 const App = () => {
   return (
@@ -19,10 +19,13 @@ const App = () => {
           <Route path={ROUTES.FEED}>
             <Feed />
           </Route>
-          <Route exact path="/">
+          <Route path={`${ROUTES.POST}/:postId`}>
+            <PostPage />
+          </Route>
+          <Route exact path='/'>
             <Redirect to={ROUTES.FEED} />
           </Route>
-          <Route path="*">
+          <Route path='*'>
             <Page404 />
           </Route>
         </Switch>
