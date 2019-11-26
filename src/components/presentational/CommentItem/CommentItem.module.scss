@@ -1,0 +1,41 @@
+.commentHeader {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  margin-right: 10px;
+  border-radius: 50%;
+  border: 2px solid rgb(177, 177, 177);
+  width: 30px;
+  height: 30px;
+}
+
+.author {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.commentText {
+  margin-left: 40px;
+}
+
+.repliedName {
+  display: block;
+  margin-left: 40px;
+  margin-bottom: 4px;
+
+  b {
+    font-weight: bold;
+  }
+}
+
+.replyButton {
+  font-size: 13px;
+  margin-left: 8px;
+  cursor: pointer;
+
+  &:hover {
+    color: rgb(178, 184, 132);
+  }
+}

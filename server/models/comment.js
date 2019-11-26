@@ -13,12 +13,16 @@ const CommentSchema = new Schema(
       required: true
     },
     repliedTo: {
-      type: String,
+      type: String
     },
     user: { type: Schema.Types.ObjectId, ref: 'User' },
     post: { type: Schema.Types.ObjectId, ref: 'Post', required: true },
+    parentComment: { type: Schema.Types.ObjectId, ref: 'Comment' },
     replies: [
-      { type: Schema.Types.ObjectId, ref: 'Comment' }
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Comment'
+      }
     ]
   },
   {

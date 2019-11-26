@@ -34,6 +34,8 @@ module.exports = schemas = `
     replies: [Comment]
     user: User
     post: Post!
+    createdAt: String!
+    parentComment: ID
   }
 
   input PostInput {

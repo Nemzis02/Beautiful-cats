@@ -26,6 +26,10 @@ const Post = props => {
   const article = props.isAllArticleDisplay
     ? props.article
     : `${pathOr('', ['article'], props).slice(0, 400)}...`;
+
+    const copyLinkToClipboard = () => {
+      navigator.clipboard.writeText(`${window.location.origin}${ROUTES.POST}/${props._id}`);
+    }
   return (
     <section className={styles.container}>
       <div className={styles.header}>
@@ -50,11 +54,10 @@ const Post = props => {
             <button type='button'>Читать</button>
           </Link>
         )}
-        <button type='button'>Ссылка</button>
-        <button type='button'>-</button>
-        0
-        <button type='button'>+</button>
-        0
+        <button type='button' onClick={copyLinkToClipboard}>
+          Ссылка
+        </button>
+        <button type='button'>-</button>0<button type='button'>+</button>0
       </nav>
     </section>
   );

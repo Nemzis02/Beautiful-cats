@@ -32,16 +32,17 @@ module.exports = resolvers = {
       }
     },
     addComment: async (_, req) => {
-      const { repliedTo, parentComment } = req.comment;
+      const { parentComment } = req.comment;
       try {
-        if (repliedTo && parentComment) {
-          const existingComment = await Comment.findById(parentComment);
+        if (parentComment) {
+          let existingComment = await Comment.findById(parentComment);
           const newComment = new Comment({ ...req.comment });
           await newComment.save();
           existingComment.replies.push(newComment);
           await existingComment.save();
-          console.log(existingComment);
-          return existingComment;
+          existingComment = await Comment.findById(parentComment).populate('replies');
+          console.log(newComment);
+          return newComment;
         } else {
           const comment = new Comment({ ...req.comment });
           await comment.save();

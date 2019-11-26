@@ -26,9 +26,22 @@ export const POST = gql`
         _id
         text
         author
+        createdAt
         repliedTo
+        parentComment
+        user {
+          userName
+        }
         replies {
+          _id
           text
+          author
+          repliedTo
+          parentComment
+          createdAt
+          user {
+            userName
+          }
         }
       }
     }

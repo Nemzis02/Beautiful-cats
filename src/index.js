@@ -9,8 +9,6 @@ import 'styles/main.scss';
 import * as serviceWorker from './serviceWorker';
 
 import { GRAPHQL_HOST } from 'global/constants';
-import StateResolvers from 'apollo/resolvers';
-import typeDefs from 'apollo/typeDefs';
 
 const cache = new InMemoryCache();
 
