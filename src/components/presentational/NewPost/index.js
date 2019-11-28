@@ -32,7 +32,7 @@ const NewPost = props => {
           rows={6}
           defaultValue={formData.article}
         />
-        <input name='image' type='file' accept='.png, .jpg, .jpeg' />
+        <input name='image' type='file' accept='.png, .jpg, .jpeg' multiple />
         <select name='city' defaultValue={formData.city}>
           <option value='Ялта'>Ялта</option>
           <option value='Симферополь'>Симферополь</option>

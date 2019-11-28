@@ -10,12 +10,12 @@ import avatar from 'assets/images/avatar.jpg';
 
 const Posts = () => {
   const { data } = useQuery(POSTS);
-  
+  console.log(data)
   const posts = clone(pathOr([], ['posts'], data)).map(post => {
     post.createdAt = getDateString(post.createdAt);
     return post.user ? post : { ...post, user: { avatar } };
   });
-  
+
   const renderPosts = posts.map(post => (
     <Post key={post._id} {...post} isReadButtonDisplay />
   ));

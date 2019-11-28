@@ -1,16 +1,30 @@
-module.exports = schemas = `
-  type Query { 
+const { gql } = require('apollo-server');
+
+module.exports = schemas = gql`
+  scalar Upload
+
+  type Query {
     posts: [Post]
     post(id: ID!): Post
-   }
+  }
 
   type Mutation {
     addPost(post: PostInput!): Post
     addComment(comment: CommentInput!): Comment
+    createUser(user: UserInput!): User
+  }
+
+  type File {
+    filename: String!
+    mimetype: String!
+    encoding: String!
   }
 
   type User {
+    _id: ID!
     userName: String!
+    avatar: String
+    email: String
   }
 
   type Post {
@@ -41,7 +55,7 @@ module.exports = schemas = `
   input PostInput {
     title: String
     article: String!
-    images: [String]
+    images: [Upload!]
     author: String!
   }
 
@@ -56,5 +70,8 @@ module.exports = schemas = `
 
   input UserInput {
     userName: String!
+    avatar: String
+    email: String!
+    password: String!
   }
 `;

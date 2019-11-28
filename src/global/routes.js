@@ -1,4 +1,5 @@
 export const ROUTES = Object.freeze({
     FEED: '/feed',
-    POST: '/post'
+    POST: '/post',
+    SIGNUP: '/sign-up'
 })

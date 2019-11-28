@@ -1,9 +1,9 @@
 import React, { useState, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation } from '@apollo/react-hooks';
+import { clone } from 'ramda';
 
 import { ROUTES } from 'global/routes';
-import { HOST } from 'global/constants';
 import { NewPost } from 'components/presentational';
 import { ModalWindow } from 'components/presentational';
 import { POSTS } from 'apollo/queries';
@@ -13,18 +13,19 @@ import styles from './Header.module.scss';
 
 const Header = () => {
   const [isModalDisplay, setModalView] = useState(false);
-  const [isDataLoading, setDataLoading] = useState(false);
   const [formData, setFormData] = useState({});
   const [addPost, { loading }] = useMutation(ADD_POST, {
-    onCompleted: onModalDisplayToggle,
-    awaitRefetchQueries: true,
-    refetchQueries: [
-      {
-        query: POSTS
-      }
-    ]
+    onCompleted: () => {
+      onModalDisplayToggle();
+      setFormData({});
+    },
+    update: (store, { data: addPost }) => {
+      let data = store.readQuery({ query: POSTS });
+      data = clone(data);
+      data.posts = [addPost.addPost, ...data.posts];
+      store.writeQuery({ query: POSTS, data });
+    }
   });
-
   function onModalDisplayToggle() {
     setModalView(prevValue => !prevValue);
   }
@@ -35,7 +36,10 @@ const Header = () => {
     let localImage = formData.localImage;
 
     if (fieldName === 'image') {
-      fieldValue = event.target.files[0];
+      fieldValue = event.target.files;
+      if (Array.isArray(Array.from(fieldValue)) && fieldValue.length > 10) {
+        return alert('Нельзя прикрепить больше, чем 10 файлов');
+      }
       localImage = URL.createObjectURL(event.target.files[0]);
     }
     setFormData(prevFormValues => ({
@@ -46,34 +50,17 @@ const Header = () => {
   };
 
   const onSendData = async () => {
-    const formObject = new FormData();
-
-    formObject.append('image', formData.image);
-
-    setDataLoading(true);
-
-    try {
-      const dispatchImageResponse = await fetch(`${HOST}/send-images`, {
-        method: 'PUT',
-        body: formObject
-      }).then(res => res.json());
-
-      addPost({
-        variables: {
-          title: formData.title,
-          article: formData.article,
-          images: [dispatchImageResponse.data.imagePath],
-          author: formData.author
-        }
-      });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setDataLoading(false);
-    }
+    addPost({
+      variables: {
+        title: formData.title,
+        article: formData.article,
+        images: formData.image,
+        author: formData.author
+      }
+    });
   };
 
-  if (isDataLoading || loading) {
+  if (loading) {
     return <h1>Loading</h1>;
   }
 
@@ -91,7 +78,7 @@ const Header = () => {
         <Link to={ROUTES.FEED}>Словарь</Link>
         <Link to={ROUTES.FEED}>Поиск</Link>
         <Link to={ROUTES.FEED}>Обратная связь</Link>
-        <Link to={ROUTES.FEED}>Регистрация</Link>
+        <Link to={ROUTES.SIGNUP}>Регистрация</Link>
         <Link to={ROUTES.FEED}>Вход</Link>
         <button type='button' onClick={onModalDisplayToggle}>
           Новый пост

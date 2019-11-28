@@ -1,10 +1,10 @@
-import { gql } from 'apollo-boost';
+import gql from 'graphql-tag';
 
 export const ADD_POST = gql`
   mutation AddPost(
     $title: String
     $article: String!
-    $images: [String]
+    $images: [Upload!]
     $author: String!
   ) {
     addPost(
@@ -15,7 +15,12 @@ export const ADD_POST = gql`
         author: $author
       }
     ) {
+      _id
+      author
       title
+      article
+      images
+      createdAt
     }
   }
 `;
@@ -84,6 +89,19 @@ export const ADD_REPLY = gql`
           userName
         }
       }
+    }
+  }
+`;
+
+export const CREATE_USER = gql`
+  mutation CreateUser($userName: String!, $email: String!, $password: String!) {
+    createUser(
+      user: { userName: $userName, email: $email, password: $password }
+    ) {
+      _id
+      userName
+      avatar
+      email
     }
   }
 `;

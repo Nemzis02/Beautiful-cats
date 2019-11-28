@@ -1,43 +1,34 @@
 const express = require('express');
 const path = require('path');
-
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
+const { apolloUploadExpress } = require('apollo-upload-server');
 const { makeExecutableSchema } = require('graphql-tools');
-const multer = require('multer');
 require('dotenv').config();
 
 const { allowCors } = require('./middlewares/allow-cors');
 const schemas = require('./schemas/schema');
 const resolvers = require('./resolvers/resolvers');
-const user = require('./routes/user');
 
 const schema = makeExecutableSchema({
   typeDefs: schemas,
-  resolvers
-});
-
-const storageConfig = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/images');
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  }
+  resolvers,
 });
 
 const app = express();
 
 app.use(allowCors);
 
-app.use(bodyParser.json());
-
-app.use(multer({ storage: storageConfig }).single('image'));
+app.use(
+  bodyParser.json(),
+  apolloUploadExpress({
+    maxFileSize: 10000000,
+    maxFiles: 10
+  })
+);
 
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(user);
 
 app.use('/graphql', graphqlExpress({ schema }));
 

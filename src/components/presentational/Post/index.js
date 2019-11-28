@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { pathOr } from 'ramda';
+import { pathOr, take } from 'ramda';
 import { Link } from 'react-router-dom';
 
 import { HOST } from 'global/constants';
@@ -23,13 +23,23 @@ const propTypes = {
 };
 
 const Post = props => {
-  const article = props.isAllArticleDisplay
-    ? props.article
-    : `${pathOr('', ['article'], props).slice(0, 400)}...`;
+  let article = '';
 
-    const copyLinkToClipboard = () => {
-      navigator.clipboard.writeText(`${window.location.origin}${ROUTES.POST}/${props._id}`);
-    }
+  if (props.isAllArticleDisplay || props.article.length < 400) {
+    article = props.article;
+  } else {
+    article = `${pathOr('', ['article'], props).slice(0, 400)}...`;
+  }
+
+  const copyLinkToClipboard = () => {
+    navigator.clipboard.writeText(
+      `${window.location.origin}${ROUTES.POST}/${props._id}`
+    );
+  };
+
+  const images = props.isAllArticleDisplay
+    ? props.images
+    : take(1, props.images);
   return (
     <section className={styles.container}>
       <div className={styles.header}>
@@ -43,11 +53,14 @@ const Post = props => {
       </div>
       <h1 className={styles.title}>{props.title}</h1>
       <article className={styles.article}>{article}</article>
-      <img
-        className={styles.articleImage}
-        src={`${HOST}/${props.images[0]}`}
-        alt={props.title}
-      />
+      {images.map(image => (
+        <img
+          key={image}
+          className={styles.articleImage}
+          src={`${HOST}/${image}`}
+          alt={props.title}
+        />
+      ))}
       <nav className={styles.postFooter}>
         {props.isReadButtonDisplay && (
           <Link to={`${ROUTES.POST}/${props._id}`}>
