@@ -12,6 +12,11 @@ module.exports = schemas = gql`
     addPost(post: PostInput!): Post
     addComment(comment: CommentInput!): Comment
     createUser(user: UserInput!): User
+    signIn(credentials: CredentialsInput!): Token!
+  }
+
+  type Token {
+    token: String!
   }
 
   type File {
@@ -71,6 +76,11 @@ module.exports = schemas = gql`
   input UserInput {
     userName: String!
     avatar: String
+    email: String!
+    password: String!
+  }
+
+  input CredentialsInput {
     email: String!
     password: String!
   }

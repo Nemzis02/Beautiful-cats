@@ -79,7 +79,7 @@ const Header = () => {
         <Link to={ROUTES.FEED}>Поиск</Link>
         <Link to={ROUTES.FEED}>Обратная связь</Link>
         <Link to={ROUTES.SIGNUP}>Регистрация</Link>
-        <Link to={ROUTES.FEED}>Вход</Link>
+        <Link to={ROUTES.SIGNIN}>Вход</Link>
         <button type='button' onClick={onModalDisplayToggle}>
           Новый пост
         </button>

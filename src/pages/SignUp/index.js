@@ -14,9 +14,11 @@ const propTypes = {
 };
 
 const SignUp = props => {
-  const [createUser] = useMutation(CREATE_USER, {
-    onCompleted: () => {
-      props.history.push('/');
+  const [createUser, { data }] = useMutation(CREATE_USER, {
+    onCompleted: data => {
+      if (data.createUser) {
+        props.history.push('/');
+      }
     }
   });
   const onSubmit = async values => {
@@ -28,6 +30,11 @@ const SignUp = props => {
       }
     });
   };
+
+  if (data && !data.createUser) {
+    return <h1>Something went wrong</h1>;
+  }
+
   return <SignUpForm onSubmit={onSubmit} />;
 };
 

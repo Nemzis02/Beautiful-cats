@@ -1,10 +1,11 @@
 const path = require('path');
 const { createWriteStream } = require('fs');
-const { validator, validate } = require('graphql-validation');
+const bcrypt = require('bcryptjs');
 
 const Post = require('../models/post');
 const Comment = require('../models/Comment');
 const User = require('../models/User');
+const validators = require('../validators');
 
 module.exports = resolvers = {
   Query: {
@@ -87,10 +88,34 @@ module.exports = resolvers = {
     },
     createUser: async (_, req) => {
       try {
+        await validators.createUser.validate(req.user);
+        const isUserExists = await User.findOne({ email: req.user.email });
+
+        if (isUserExists) {
+          throw new Error('This email was alredy used by another user');
+        }
+
         const user = new User({ ...req.user });
+        const encryptedPassword = await new Promise((resolve, reject) => {
+          bcrypt.hash('password', 12, (err, encryptedPassword) => {
+            if (err) {
+              reject(err);
+            }
+            resolve(encryptedPassword);
+          });
+        });
+
+        user.password = encryptedPassword;
         await user.save();
         console.log(user);
         return user;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    signIn: async (_, req) => {
+      try {
+        console.log('hello');
       } catch (error) {
         console.log(error);
       }

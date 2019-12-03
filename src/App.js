@@ -6,7 +6,7 @@ import {
   Switch
 } from 'react-router-dom';
 
-import { Page404, Feed, PostPage, SignUp } from 'pages';
+import { Page404, Feed, PostPage, SignUp, SignIn } from 'pages';
 import { Header } from 'components/containers';
 import { ROUTES } from 'global/routes';
 
@@ -21,6 +21,9 @@ const App = () => {
           </Route>
           <Route path={`${ROUTES.SIGNUP}`}>
             <SignUp />
+          </Route>
+          <Route path={`${ROUTES.SIGNIN}`}>
+            <SignIn />
           </Route>
           <Route path={`${ROUTES.POST}/:postId`}>
             <PostPage />
