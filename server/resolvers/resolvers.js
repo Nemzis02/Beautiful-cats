@@ -25,9 +25,21 @@ module.exports = resolvers = {
         path: 'comments',
         populate: {
           path: 'replies',
-          model: 'Comment'
+          model: 'Comment',
+          populate: {
+            path: 'user',
+            model: 'User'
+          }
         }
-      });
+      })
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'user',
+          model: 'User',
+        }
+      })
+      
       return post;
     },
     user: async (_, args, context) => {
@@ -95,18 +107,17 @@ module.exports = resolvers = {
           await newComment.save();
           existingComment.replies.push(newComment);
           await existingComment.save();
-          existingComment = await Comment.findById(parentComment).populate(
-            'replies'
-          );
-          console.log(newComment);
-          return newComment;
-        } else {
-          const comment = new Comment({ ...req.comment });
-          await comment.save();
-          const post = await Post.findById(req.comment.post);
-          post.comments.push(comment._id);
-          await post.save();
+          const comment = await Comment.findById(newComment._id).populate('user');
           console.log(comment);
+          return comment;
+        } else {
+          const newComment = new Comment({ ...req.comment });
+          await newComment.save();
+          const post = await Post.findById(req.comment.post);
+          post.comments.push(newComment._id);
+          await post.save();
+          const comment = await Comment.findById(newComment._id).populate('user');
+          console.log(comment)
           return comment;
         }
       } catch (error) {

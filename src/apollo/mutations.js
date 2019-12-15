@@ -26,8 +26,8 @@ export const ADD_POST = gql`
 `;
 
 export const ADD_COMMENT = gql`
-  mutation AddComment($text: String!, $author: String!, $post: ID!) {
-    addComment(comment: { text: $text, author: $author, post: $post }) {
+  mutation AddComment($text: String!, $author: String!, $post: ID!, $user: ID) {
+    addComment(comment: { text: $text, author: $author, post: $post, user: $user }) {
       _id
       text
       author
@@ -59,6 +59,7 @@ export const ADD_REPLY = gql`
     $post: ID!
     $parentComment: ID
     $repliedTo: String
+    $user: ID
   ) {
     addComment(
       comment: {
@@ -67,6 +68,7 @@ export const ADD_REPLY = gql`
         post: $post
         parentComment: $parentComment
         repliedTo: $repliedTo
+        user: $user
       }
     ) {
       _id

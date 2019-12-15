@@ -71,7 +71,7 @@ module.exports = schemas = gql`
     author: String!
     repliedTo: String
     parentComment: ID
-    user: UserInput
+    user: ID
     post: ID!
   }
 

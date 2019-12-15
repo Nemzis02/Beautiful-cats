@@ -57,6 +57,7 @@ query IsUserLoggedIn {
 export const USER = gql`
 query User($id: ID) {
     user(id: $id) {
+      _id
       userName
     }
   }

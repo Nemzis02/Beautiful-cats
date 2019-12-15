@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { pathOr, clone } from 'ramda';
+import { pathOr, clone, isEmpty } from 'ramda';
 
 import { Post, CommentForm } from 'components/presentational';
 import { Comment } from 'components/containers';
@@ -23,12 +23,13 @@ const propTypes = {
 
 const PostPage = ({ match }) => {
   const { postId } = match.params;
-  useQuery(USER, {
+  const { data: userData } = useQuery(USER, {
     onCompleted: data => {
       const { userName } = data.user;
       setFormData({ userName });
     }
   });
+  const user = pathOr({}, ['user'], userData);
   const [formData, setFormData] = useState({});
   const { data, loading, error } = useQuery(POST, {
     variables: { id: postId }
@@ -44,7 +45,7 @@ const PostPage = ({ match }) => {
       id: postId
     },
     onCompleted: () => {
-      setFormData({});
+      setFormData({ userName: user.userName });
     }
   });
 
@@ -53,7 +54,8 @@ const PostPage = ({ match }) => {
       variables: {
         text: formData.comment,
         author: formData.userName,
-        post: postId
+        post: postId,
+        user: user._id
       }
     });
   };
@@ -71,23 +73,23 @@ const PostPage = ({ match }) => {
   const post = { ...pathOr({}, ['post'], data) };
   const comments = clone(pathOr([], ['comments'], post));
 
-  if (Object.keys(post).length && !post.user) {
+  if (!isEmpty(post)) {
     post.user = { avatar };
   }
 
-  if (Object.keys(post).length && post) {
+  if (!isEmpty(post)) {
     post.createdAt = getDateString(post.createdAt);
   }
 
   comments.map(comment => {
     comment.createdAt = getDateString(comment.createdAt);
-    if (!comment.user) {
+    if (!comment.user.avatar) {
       comment.user = { avatar };
     }
 
     comment.replies.map(reply => {
       reply.createdAt = getDateString(reply.createdAt);
-      if (!reply.user) {
+      if (!reply.user.avatar) {
         reply.user = { avatar };
       }
       return reply;

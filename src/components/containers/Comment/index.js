@@ -1,10 +1,11 @@
 import React, { Fragment, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import { pathOr } from 'ramda';
 
 import { CommentItem, ReplyForm } from 'components/presentational';
 import { ADD_REPLY } from 'apollo/mutations';
-import { POST } from 'apollo/queries';
+import { POST, USER } from 'apollo/queries';
 
 import styles from './Comment.module.scss';
 
@@ -34,11 +35,17 @@ const propTypes = {
 };
 
 const Comments = ({ comment, postId }) => {
+  const { data: userData } = useQuery(USER, {
+    onCompleted: (data) => {
+      setFormData({userName: data.user.userName});
+    }
+  });
+  const user = pathOr({}, ['user'], userData);
   const formRef = useRef(null);
   const [formData, setFormData] = useState({});
   const [addComment] = useMutation(ADD_REPLY, {
     onCompleted: () => {
-      setFormData({});
+      setFormData({ userName: user.userName });
       formRef.current.reset();
     },
     update: (store, { data: { addComment } }) => {
@@ -86,7 +93,8 @@ const Comments = ({ comment, postId }) => {
         text: formData.comment,
         author: formData.userName,
         post: postId,
-        repliedTo: formData.repliedTo
+        repliedTo: formData.repliedTo,
+        user: user._id
       }
     });
   };
