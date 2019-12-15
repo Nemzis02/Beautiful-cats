@@ -19,6 +19,10 @@ const UserSchema = new Schema(
     avatar: {
       type: String,
       default: null
+    },
+    type: {
+      type: String,
+      default: 'authorized'
     }
   },
   {

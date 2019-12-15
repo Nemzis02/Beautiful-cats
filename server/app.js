@@ -13,7 +13,7 @@ const resolvers = require('./resolvers/resolvers');
 
 const schema = makeExecutableSchema({
   typeDefs: schemas,
-  resolvers,
+  resolvers
 });
 
 const app = express();
@@ -30,7 +30,18 @@ app.use(
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/graphql', graphqlExpress({ schema }));
+app.use(
+  '/graphql',
+  graphqlExpress(req => {
+    const { authorization } = req.headers;
+    return {
+      schema,
+      context: {
+        token: authorization ? authorization.replace('Bearer ', '') : ''
+      }
+    };
+  })
+);
 
 app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
 

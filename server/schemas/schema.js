@@ -6,6 +6,7 @@ module.exports = schemas = gql`
   type Query {
     posts: [Post]
     post(id: ID!): Post
+    user(id: ID): User!
   }
 
   type Mutation {
@@ -30,6 +31,7 @@ module.exports = schemas = gql`
     userName: String!
     avatar: String
     email: String
+    type: String
   }
 
   type Post {

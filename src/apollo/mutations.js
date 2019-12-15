@@ -105,3 +105,14 @@ export const CREATE_USER = gql`
     }
   }
 `;
+
+export const SIGN_IN = gql`
+  mutation SignIn($email: String!, $password: String!) {
+    signIn(credentials: {
+      email: $email
+      password: $password
+    }) {
+      token
+    }
+  }
+`;

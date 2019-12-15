@@ -1,23 +1,37 @@
 import React, { useState, Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import { useMutation } from '@apollo/react-hooks';
-import { clone } from 'ramda';
+import { useMutation, useQuery, useApolloClient } from '@apollo/react-hooks';
+import { clone, pathOr } from 'ramda';
 
 import { ROUTES } from 'global/routes';
 import { NewPost } from 'components/presentational';
 import { ModalWindow } from 'components/presentational';
-import { POSTS } from 'apollo/queries';
+import { POSTS, IS_USER_LOGGED_IN, USER } from 'apollo/queries';
 import { ADD_POST } from 'apollo/mutations';
 
 import styles from './Header.module.scss';
 
+const setDefaultFormData = (data, setFormData) => {
+  return setFormData({
+    author: data.userName
+  });
+};
+
 const Header = () => {
+  const {
+    data: { isUserLoggedIn }
+  } = useQuery(IS_USER_LOGGED_IN);
+  const { data: userData } = useQuery(USER, {
+    onCompleted: () => setDefaultFormData(user, setFormData)
+  });
+  const user = pathOr({}, ['user'], userData);
+  const client = useApolloClient();
   const [isModalDisplay, setModalView] = useState(false);
   const [formData, setFormData] = useState({});
   const [addPost, { loading }] = useMutation(ADD_POST, {
     onCompleted: () => {
       onModalDisplayToggle();
-      setFormData({});
+      setDefaultFormData(user, setFormData);
     },
     update: (store, { data: addPost }) => {
       let data = store.readQuery({ query: POSTS });
@@ -60,6 +74,15 @@ const Header = () => {
     });
   };
 
+  const logOut = () => {
+    localStorage.removeItem('token');
+    client.writeData({
+      data: {
+        isUserLoggedIn: false
+      }
+    });
+  };
+
   if (loading) {
     return <h1>Loading</h1>;
   }
@@ -78,8 +101,13 @@ const Header = () => {
         <Link to={ROUTES.FEED}>Словарь</Link>
         <Link to={ROUTES.FEED}>Поиск</Link>
         <Link to={ROUTES.FEED}>Обратная связь</Link>
-        <Link to={ROUTES.SIGNUP}>Регистрация</Link>
-        <Link to={ROUTES.SIGNIN}>Вход</Link>
+        {!isUserLoggedIn && <Link to={ROUTES.SIGN_UP}>Регистрация</Link>}
+        {!isUserLoggedIn && <Link to={ROUTES.SIGN_IN}>Вход</Link>}
+        {isUserLoggedIn && (
+          <button className={styles.logOutButton} onClick={logOut}>
+            Выход
+          </button>
+        )}
         <button type='button' onClick={onModalDisplayToggle}>
           Новый пост
         </button>

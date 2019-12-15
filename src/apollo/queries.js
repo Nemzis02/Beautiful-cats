@@ -47,3 +47,17 @@ export const POST = gql`
     }
   }
 `;
+
+export const IS_USER_LOGGED_IN = gql`
+query IsUserLoggedIn {
+    isUserLoggedIn @client
+  }
+`;
+
+export const USER = gql`
+query User($id: ID) {
+    user(id: $id) {
+      userName
+    }
+  }
+`;

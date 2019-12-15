@@ -6,7 +6,7 @@ import { pathOr, clone } from 'ramda';
 
 import { Post, CommentForm } from 'components/presentational';
 import { Comment } from 'components/containers';
-import { POST } from 'apollo/queries';
+import { POST, USER } from 'apollo/queries';
 import { ADD_COMMENT } from 'apollo/mutations';
 import { getDateString } from 'utils/utils';
 import avatar from 'assets/images/avatar.jpg';
@@ -23,7 +23,12 @@ const propTypes = {
 
 const PostPage = ({ match }) => {
   const { postId } = match.params;
-
+  useQuery(USER, {
+    onCompleted: data => {
+      const { userName } = data.user;
+      setFormData({ userName });
+    }
+  });
   const [formData, setFormData] = useState({});
   const { data, loading, error } = useQuery(POST, {
     variables: { id: postId }
@@ -90,13 +95,14 @@ const PostPage = ({ match }) => {
 
     return comment;
   });
-  
+
   const title = comments.length
     ? 'Комментарии:'
     : 'Оставьте свой комментарий первым!';
 
   if (loading) return <h1>Loading</h1>;
-  if (error || !data || !Object.keys(post).length) return <h1>Something went wrong</h1>
+  if (error || !data || !Object.keys(post).length)
+    return <h1>Something went wrong</h1>;
   return (
     <main className={styles.container}>
       <Post {...post} isAllArticleDisplay />

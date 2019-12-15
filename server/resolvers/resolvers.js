@@ -1,11 +1,16 @@
 const path = require('path');
 const { createWriteStream } = require('fs');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { promisify } = require('util');
 
 const Post = require('../models/post');
 const Comment = require('../models/Comment');
 const User = require('../models/User');
 const validators = require('../validators');
+
+const jwtSign = promisify(jwt.sign);
+const jwtVerify = promisify(jwt.verify);
 
 module.exports = resolvers = {
   Query: {
@@ -24,7 +29,29 @@ module.exports = resolvers = {
         }
       });
       return post;
-    }
+    },
+    user: async (_, args, context) => {
+      const { token } = context;
+      try {
+        let id;
+
+        if (token && !args.id) {
+          const verifiedToken = await jwtVerify(token, process.env.SECRET_KEY);
+          id = verifiedToken._id;
+        }
+
+        if (args.id) {
+          id = args.id;
+        }
+
+        const user = await User.findById(id);
+        delete user.password;
+
+        return user;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
   },
   Mutation: {
     addPost: async (_, req) => {
@@ -92,12 +119,12 @@ module.exports = resolvers = {
         const isUserExists = await User.findOne({ email: req.user.email });
 
         if (isUserExists) {
-          throw new Error('This email was alredy used by another user');
+          throw new Error('This email was already used by another user');
         }
 
         const user = new User({ ...req.user });
         const encryptedPassword = await new Promise((resolve, reject) => {
-          bcrypt.hash('password', 12, (err, encryptedPassword) => {
+          bcrypt.hash(req.user.password, 12, (err, encryptedPassword) => {
             if (err) {
               reject(err);
             }
@@ -115,7 +142,26 @@ module.exports = resolvers = {
     },
     signIn: async (_, req) => {
       try {
-        console.log('hello');
+        const { email, password } = req.credentials;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+          throw new Error('Email is not correct');
+        }
+
+        const isPasswordMatched = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordMatched) {
+          throw new Error('Password is incorrect');
+        }
+        
+        const token = await jwtSign({ _id: user._id }, process.env.SECRET_KEY);
+
+        if (!token) {
+          throw new Error('Failed to generate token');
+        }
+
+        return { token };
       } catch (error) {
         console.log(error);
       }
